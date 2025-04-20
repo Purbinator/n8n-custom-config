@@ -1,16 +1,14 @@
-# 1. Meghatározzuk, melyik hivatalos n8n képből indulunk ki.
+# 1. Alap kép használata
 FROM n8nio/n8n:latest
 
-# 2. Megadjuk a munkakönyvtárat a containeren belül.
-# Az n8n image-ek általában a /data könyvtárát használják belső működésre.
+# 2. Munkakönyvtár beállítása
 WORKDIR /data
 
-# 3. Telepítjük a pdf-lib csomagot az npm segítségével.
-# Ez a parancs letöli és telepíti a pdf-lib-et a container /data/node_modules könyvtárába.
+# 3. pdf-lib telepítése
 RUN npm install pdf-lib
 
-# 4. Beállítjuk a NODE_PATH környezeti változót, hogy az n8n Code node találja a modulokat.
+# 4. NODE_PATH beállítása
 ENV NODE_PATH=/usr/local/lib/node_modules:/data/node_modules
 
-# 5. (Opcionális) Ellenőrizzük a telepített modulokat.
+# 5. (Opcionális) Ellenőrzés a telepített modulokról
 RUN ls -la /data/node_modules
