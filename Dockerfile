@@ -4,10 +4,20 @@
     # 2. Állítsd be a munkakönyvtárat /data-ra
     WORKDIR /data
 
-    # 3. Telepítsd a pdf-lib csomagot HELYBEN (a /data/node_modules alá)
-    #    Lehet, hogy root jogosultság kell, ha az alap image nem kezeli, 
-    #    de a korábbi logok alapján ez működött. Ha mégsem, próbáld USER root/USER node köré tenni.
-    RUN npm install pdf-lib
+    # 3. Cache invalidáló argumentum és kiíratás
+    #    Ez a sor minden buildnél változhat (vagy legalábbis invalidálja a cache-t)
+    #    A lényeg, hogy valami változzon a telepítés előtt.
+    ARG CACHEBUST=1
+    RUN echo "Cachebust argument: $CACHEBUST"
 
-    # 4. Az n8n indításáról az alap image gondoskodik. Visszaállítjuk a default usert.
-    USER node 
+    # 4. Telepítsd a pdf-lib csomagot HELYBEN (a /data/node_modules alá)
+    #    Most már ennek a parancsnak ténylegesen le kell futnia, nem lehet CACHED.
+    RUN npm install pdf-lib && \
+        echo "--- Listing /data contents after install ---" && \
+        ls -la /data && \
+        echo "--- Listing /data/node_modules contents ---" && \
+        ls -la /data/node_modules && \
+        echo "--- End of listings ---"
+
+    # 5. Az n8n indításáról az alap image gondoskodik. Visszaállítjuk a default usert.
+    USER node
